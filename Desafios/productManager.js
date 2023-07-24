@@ -1,7 +1,7 @@
 const fs = require('fs')
 
 
-class ProductManager {
+class productManager {
     constructor(path) {
         this.path = path
     }
@@ -10,10 +10,10 @@ class ProductManager {
         try {
             if (fs.existsSync(this.path)) {
                 const data = await fs.promises.readFile(this.path, 'utf-8')
-                return JSON.parse(data)
+                return JSON.parse(data) 
 
             } else {
-                return []
+                return [] 
             }
         } catch {
             (error) => { return error }
@@ -36,7 +36,7 @@ class ProductManager {
             let list = await this.product()
             const listCode = list.find(e => e.code === code)
             if (listCode) {
-                console.log("El codigo ingresado ya existe, ingrese uno nuevo");
+                console.log("El código ingresado existe, por favor ingrese uno nuevo");
                 return
             };
             let obj = {
@@ -56,7 +56,7 @@ class ProductManager {
 
             list.push({ ...obj, id })
             await fs.promises.writeFile(this.path, JSON.stringify(list))
-            console.log(`El producto con el ID ${id} se generó correctamente`)
+            console.log(`El producto con el ID ${id} se generó con éxito`)
 
         }
         catch { (error) => { console.log("error") } }
@@ -70,7 +70,7 @@ class ProductManager {
                 console.log(itemId)
                 return itemId
             }
-            else { console.log(`No se encontró producto con el ID ${id}`) }
+            else { console.log(`No hay producto con el ID ${id}`) }
 
         } catch { (error) => { return (error) } }
     }
@@ -80,9 +80,9 @@ class ProductManager {
             if (list.findIndex(e => e.id === id) !== -1) {
                 const newList = list.filter(e => e.id !== id)
                 await fs.promises.writeFile(this.path, JSON.stringify(newList))
-                console.log(`El producto con el ID ${id} fue eliminado`)
+                console.log(`El producto con el ID ${id} ha sido eliminado con éxito`)
             }
-            else { console.log("El producto que intentas eliminar no existe") }
+            else { console.log("El producto que quiere eliminar no existe") }
         }
         catch { (error) => { return error } }
     }
@@ -94,7 +94,7 @@ class ProductManager {
             let objKey = Object.keys(k)
             let noId = objKey.find(e => e === "id")
             if (noId) {
-                console.log("No se puede modificar ID, ingrese valores válidos.")
+                console.log("No se puede modificar el ID, ingrese los valores correctos")
                 return
             };
             const ub = list.findIndex(e => e.id === id)
@@ -113,13 +113,12 @@ class ProductManager {
     }
 }
 
-// Test
 
-//const manager = new ProductManager("arhivo.json") 
-//manager.getProducts() 
-//manager.addProduct('League of Legends', 'Juego de campeones', 1500, 1, 3) 
-//manager.getProducts() 
-//manager.getProductsById(2) 
-//manager.updateProduct(1,{title:"Lolsito"}) 
-//manager.getProducts() 
-//manager.deleteProduct(4) 
+/*const manager = new productManager("arhivo.json") 
+manager.getProducts()
+manager.addProduct('League of Legends', 333, 23,2, 333, 23)
+manager.getProducts()
+manager.getProductsById(2)
+manager.updateProduct(2,{title:"aaaa"})
+manager.getProducts()
+manager.deleteProduct(5)*/

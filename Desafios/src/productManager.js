@@ -1,7 +1,6 @@
-const fs = require('fs')
+import * as fs from 'node:fs';
 
-
-class productManager {
+export class productManager {
     constructor(path) {
         this.path = path
     }
@@ -113,12 +112,17 @@ class productManager {
     }
 }
 
-
-/*const manager = new productManager("arhivo.json") 
+/*
+const manager = new productManager("arhivo.json") 
 manager.getProducts()
-manager.addProduct('League of Legends', 333, 23,2, 333, 23)
+manager.addProduct('excellent gato adulto', 'gatos', 23000, '', 21)
+manager.addProduct('excellent perro adulto', 'perros', 15600, '', 11)
+manager.addProduct('pro plan perro cachorro', 'perros', 33000, '', 36)
+manager.addProduct('pro plan gato cachorro', 'gatos', 26000, '', 2)
+manager.addProduct('perfume para mascotas', 'todos', 2300, '', 21)
+export const c = manager.getProducts()
 manager.getProducts()
 manager.getProductsById(2)
-manager.updateProduct(2,{title:"aaaa"})
+manager.updateProduct(2,{title:"excellent perro bajas calorias"})
 manager.getProducts()
-manager.deleteProduct(5)*/
+manager.deleteProduct(6)*/

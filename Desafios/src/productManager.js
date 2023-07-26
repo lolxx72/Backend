@@ -112,14 +112,13 @@ export class productManager {
     }
 }
 
-/*
-const manager = new productManager("arhivo.json") 
+
+/*const manager = new productManager("arhivo.json") 
 manager.getProducts()
-manager.addProduct('excellent gato adulto', 'gatos', 23000, '', 21)
-manager.addProduct('excellent perro adulto', 'perros', 15600, '', 11)
-manager.addProduct('pro plan perro cachorro', 'perros', 33000, '', 36)
-manager.addProduct('pro plan gato cachorro', 'gatos', 26000, '', 2)
-manager.addProduct('perfume para mascotas', 'todos', 2300, '', 21)
+manager.addProduct('excellent gato adulto', 'gatos', 23000, 'a', 21)
+manager.addProduct('excellent perro adulto', 'perros', 15600, 'b', 11)
+manager.addProduct('pro plan perro cachorro', 'perros', 33000, 'c', 36)
+manager.addProduct('pro plan gato cachorro', 'gatos', 26000, 'd', 2)
 export const c = manager.getProducts()
 manager.getProducts()
 manager.getProductsById(2)

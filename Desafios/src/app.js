@@ -1,7 +1,7 @@
 import express, { response } from 'express'
-import {ProductManager}  from './productManager.js'
+import productManager  from './productManager.js'
 
-const manager = new ProductManager("arhivo.json")
+const manager = new productManager("arhivo.json")
 const prods= await manager.product()
 
 
@@ -24,6 +24,6 @@ app.get('/products',(req,res)=>{
 app.get('/products/:pid', (req,res)=>{
     const pid= req.params.pid
     const pfid=prods.find(e=>e.id==pid)
-    if(!pfid){res.send(`There is no product with ID: ${pid.toUpperCase()}`)}
+    if(!pfid){res.send(`No hay ningún producto con ID: ${pid.toUpperCase()}`)}
     else{res.send(pfid)}
 })

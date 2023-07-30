@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 
-export class productManager {
+export default class productManager {
     constructor(path) {
         this.path = path
     }

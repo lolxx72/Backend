@@ -1,4 +1,4 @@
-import * as fs from 'node:fs';
+import fs from 'fs';
 
 export default class productManager {
     constructor(path) {
@@ -22,43 +22,39 @@ export default class productManager {
     async getProducts(){
         try{
             let variablew=await this.product()
-            console.log(await variablew)
+            return await variablew
         }catch{(error) => { return error }}
     }
 
-    async addProduct(title, description, price, thumbnail, code, stock) {
+    async addProduct(title, description, price, thumbnail, code, stock, category, status = true) {
         try {
-            if (!title || !description || !price || !thumbnail || !stock || !code) {
-                console.log('Ingrese todos los datos')
-                return
+            if (!title || !description || !price || !thumbnail || !stock || !code || !category) {
+                return 'Ingrese todos los datos'
             }
             let list = await this.product()
             const listCode = list.find(e => e.code === code)
             if (listCode) {
-                console.log("El código ingresado existe, por favor ingrese uno nuevo");
-                return
+                return "El código ingresado existe, por favor ingrese uno nuevo"
             };
             let obj = {
                 title: title,
                 description: description,
-                price: price,
-                thumbnail: thumbnail,
                 code: code,
+                price: price,
+                status: status,
+                category: category,
+                thumbnail: thumbnail,
                 stock: stock
             }
-            let id
-            if (list.length == 0) {
-                id = 1;
-            } else {
-                id = list[list.length - 1].id + 1
-            }
+
+            let id = list.length == 0 ? 1 : list[list.length - 1].id + 1
 
             list.push({ ...obj, id })
             await fs.promises.writeFile(this.path, JSON.stringify(list))
-            console.log(`El producto con el ID ${id} se generó con éxito`)
+            return `El producto con el ID ${id} se generó con éxito`
 
         }
-        catch { (error) => { console.log("error") } }
+        catch { (error) => { return error } }
     };
 
     async getProductsById(id) {
@@ -66,45 +62,45 @@ export default class productManager {
             let list = await this.product()
             const itemId = list.find(e => e.id === id)
             if (itemId) {
-                console.log(itemId)
                 return itemId
             }
-            else { console.log(`No hay producto con el ID ${id}`) }
+            else { return `No hay producto con el ID ${id}` }
 
         } catch { (error) => { return (error) } }
     }
+
     async deleteProduct(id) {
         try {
             let list = await this.product()
             if (list.findIndex(e => e.id === id) !== -1) {
                 const newList = list.filter(e => e.id !== id)
                 await fs.promises.writeFile(this.path, JSON.stringify(newList))
-                console.log(`El producto con el ID ${id} ha sido eliminado con éxito`)
+                return `El producto con el ID ${id} ha sido eliminado con éxito`
             }
-            else { console.log("El producto que quiere eliminar no existe") }
+            else { return "El producto que quiere eliminar no existe" }
         }
         catch { (error) => { return error } }
     }
 
-    async updateProduct(id, k) {
+    async updateProduct(pid, obj) {
 
         try {
             let list = await this.product()
-            let objKey = Object.keys(k)
+            let objKey = Object.keys(obj)
             let noId = objKey.find(e => e === "id")
             if (noId) {
-                console.log("No se puede modificar el ID, ingrese los valores correctos")
-                return
+                return "No se puede modificar el ID, ingrese los valores correctos"
             };
-            const ub = list.findIndex(e => e.id === id)
+            const ub = list.findIndex(e => e.id === pid)
             if (ub !== -1) {
                 const objRaw = list[ub]
-                const objMod = { ...objRaw, ...k }
+                const objMod = { ...objRaw, ...obj }
                 list[ub] = objMod
-                console.log("Cambio realizado")
                 fs.promises.writeFile(this.path, JSON.stringify(list))
+                return "Cambio realizado"
+
             }
-            else { console.log(`No se encontró producto con el ID ${id}`) }
+            else { return `No se encontró producto con el ID ${id}` }
 
 
         }

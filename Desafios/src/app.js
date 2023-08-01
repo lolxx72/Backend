@@ -8,7 +8,9 @@ const prods= await manager.product()
 const app= express()
 app.use(express.urlencoded({extended:true}))
 
-app.listen(8080,()=>{}
+app.listen(8080,()=>{
+    console.log('Puerto 8080');
+}
 )
 
 app.get('/products',(req,res)=>{

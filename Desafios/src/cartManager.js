@@ -3,7 +3,7 @@ import { prodManager } from './utils.js'
 
 
 const prod = prodManager()
-export class cartManager {
+export class CartManager {
     constructor(path) {
         this.path = path
     }
@@ -18,7 +18,7 @@ export class cartManager {
 
     }
 
-    async createCart() {
+    async crateCart() {
         try {
             const cart = await this.getCart()
             const id = cart.length == 0 ? 1 : cart[cart.length - 1].id + 1
@@ -46,21 +46,21 @@ export class cartManager {
     async addProduct(cid, pid) {
         const cart = await this.getCart()
         const cartWanted = await cart.find(e => e.id == cid)
-        if (!cartWanted) { return `No hay carrito con el id ${cid}` }
+        if (!cartWanted) { return `No hay carrito con ID: ${cid}` } 
         const product = await prod.getProductsById(pid)
-        if (typeof(product)=="string") { return product}
+        if (typeof(product)=="string") { return product} 
         try {
             const findCartProd = await cartWanted.products
             const findProd = await findCartProd.find(e => e.id == pid)
             if (findProd) {
                 findProd.quantity = findProd.quantity + 1
                 await fs.promises.writeFile(this.path, JSON.stringify(cart), 'utf-8')
-                return `Añadido al carrito ID: ${cid}. Product ${product.title.toUpperCase()}. Total: ${findProd.quantity}`
+                return `Añadido al carrito ID: ${cid}. Product ${product.title.toUpperCase()}. Cart total: ${findProd.quantity}`
             } else {
                 let newProd = { id: +pid, quantity: 1 }
                 findCartProd.push(newProd)
                 await fs.promises.writeFile(this.path, JSON.stringify(cart), 'utf-8')
-                return `Añadido al carrito ID: ${cid} Product ${product.title.toUpperCase()}. Total: 1`
+                return `Añadido al carrito ID: ${cid} Product ${product.title.toUpperCase()}. Cart total: 1`
             }
         }
         catch { (error) => { return error } }

@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-export class ProductManager {
+export default class ProductManager {
     constructor(path) {
         this.path = path
     }
@@ -105,15 +105,15 @@ export class ProductManager {
 
 // TESTING
 
-/* const manager = new ProductManager("arhivo.json") */
+ //const manager = new ProductManager("arhivo.json") 
 
 
-/* manager.getProducts() */
-/* manager.addProduct('mate',"madera", 220, " ", 1,22) */
-/*  manager.addProduct('yerba','organica',1, " ",52,55,"alimento") */
-/* manager.addProduct('termo ',"palstico", 230, " ", 5,22) */
-/* manager.addProduct('matelisto',"toma mates", 22, " ", 88,22) */
-/* manager.addProduct('bombilla',"alpaca", 2200, " ", 44,22)  */
+ //manager.getProducts() 
+//manager.addProduct('Excellent Gato Adulto',"Alimento", 22560, " ", 1,6)
+/*  manager.addProduct('prueba 1','prueba 1',1, " ",52,55,"alimento") */
+/* manager.addProduct('prueba 2 ',"prueba 2", 230, " ", 5,22) */
+/* manager.addProduct('prueba 3',"prueba 3", 22, " ", 88,22) */
+/* manager.addProduct('prueba 4',"prueba 4", 2200, " ", 44,22)  */
 /* export const c = manager.getProducts() */
 /* manager.getProductsById(2) */
 /* manager.updateProduct(2,{title:"hola"}) */

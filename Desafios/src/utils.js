@@ -1,6 +1,6 @@
 import {dirname} from 'path';
 import {fileURLToPath} from 'url';
-import {ProductManager} from "./ProductManager.js";
+import ProductManager from "./productManager.js";
 import { CartManager } from './CartsManager.js';
 
 

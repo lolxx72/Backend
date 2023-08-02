@@ -25,7 +25,7 @@ export default class ProductManager {
 
     async addProduct({ title, description, price, thumbnail, code, stock, category, status = true }) {
         try {
-            if (!title || !description || !price || !thumbnail || !stock || !code || !category) {//analiza si todos los campos estan llenos
+            if (!title || !description || !price || !thumbnail || !stock || !code || !category) {
                 return 'ERROR: Complete todos los campos'
 
             }

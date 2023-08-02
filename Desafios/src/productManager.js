@@ -1,138 +1,121 @@
 import fs from 'fs';
-const filePath = 'products.json'; //test
 
-if (!fs.existsSync(filePath)) {
-  fs.writeFileSync(filePath, '[]', 'utf-8');
-  console.log(`Se ha creado el archivo ${filePath}`);
-}
-
-class ProductManager {
-  constructor(filePath) {
-    this.path = filePath;
-    this.products = [];
-    this.lastProductId = 0;
-    this.loadProducts();
-  }
-
-  async loadProducts() {
-    try {
-      const data = await fs.promises.readFile(this.path, 'utf-8');
-      this.products = JSON.parse(data);
-      this.updateLastProductId();
-    } catch (error) {
-      console.log('Error al cargar productos', error.message);
-      throw new Error('Error al cargar productos');
-    }
-  }
-
-  async saveProducts(data) {
-    try {
-      const newData = JSON.stringify(data, null, 2);
-      await fs.promises.writeFile(this.path, newData, 'utf-8');
-      console.log('Se guardaron los productos', this.path);
-    } catch (error) {
-      console.log('Error al guardar los productos', error.message);
-      throw new Error('Error al guardar los productos');
-    }
-  }
-
-  updateLastProductId() {
-    if (this.products.length > 0) {
-      const lastProduct = this.products[this.products.length - 1];
-      this.lastProductId = lastProduct.id;
-    }
-  }
-
-  addProduct(product) {
-    if (
-      !product.title ||
-      !product.description ||
-      !product.price ||
-      !product.code ||
-      !product.stock ||
-      !product.category
-    ) {
-      console.log('Debes completar todos los campos obligatorios.');
-      throw new Error('Campos incompletos');
+export default class ProductManager {
+    constructor(path) {
+        this.path = path
     }
 
-    if (this.products.some((p) => p.code === product.code)) {
-      console.log(`Ya existe un producto con el código ${product.code}.`);
-      throw new Error('Código de producto duplicado');
-    }
-
-    const newProduct = {
-      ...product,
-      id: this.lastProductId + 1,
-      status: true,
-      category: product.category,
+    async product() {
+        try {
+            if (fs.existsSync(this.path)) {
+                const data = await fs.promises.readFile(this.path, 'utf-8')
+                return JSON.parse(data) 
+            } else {
+                return [] 
+            }
+        } catch { (error) => { return error } }
     };
 
-    this.lastProductId++;
-    this.products.push(newProduct);
-
-    this.saveProducts(this.products)
-      .then(() => {
-        console.log(`Producto agregado: ${newProduct.title}`);
-      })
-      .catch((error) => {
-        console.log('Error al guardar los productos', error.message);
-        throw new Error('Error al guardar los productos');
-      });
-
-    return newProduct;
-  }
-
-  async getProducts() {
-    await this.loadProducts();
-    return this.products;
-  }
-
-  async getProductById(id) {
-    await this.loadProducts();
-    const product = this.products.find((p) => p.id === id);
-    if (product) {
-      return product;
-    } else {
-      console.log('Producto no encontrado');
-      return null;
-    }
-  }
-
-  async updateProduct(id, updatedFields) {
-    const productToUpdate = this.products.find((p) => p.id === id);
-    if (!productToUpdate) {
-      console.log(`Producto con id ${id} no encontrado`);
-      return;
+    async getProducts() {
+        try {
+            let variablew = await this.product()
+            return await variablew
+        } catch { (error) => { return error } }
     }
 
-    Object.assign(productToUpdate, updatedFields);
+    async addProduct({ title, description, price, thumbnail, code, stock, category, status = true }) {
+        try {
+            if (!title || !description || !price || !thumbnail || !stock || !code || !category) {
+                return 'ERROR: Complete todos los campos'
 
-    await this.saveProducts(this.products)
-      .then(() => {
-        console.log(`Se actualiza el producto: ${JSON.stringify(productToUpdate)}`);
-      })
-      .catch((error) => {
-        console.log('Error al guardar los productos', error.message);
-      });
-  }
+            }
+            let list = await this.product()
+            const listCode = list.find(e => e.code === code)
+            if (listCode) {
+                return "El codigo ingresado existe, coloque  valores nuevos"
+            };
+            let obj = {
+                title: title,
+                description: description,
+                code: code,
+                price: price,
+                status: status,
+                stock: stock,
+                category: category,
+                thumbnail: thumbnail
+            }
+            let id = list.length == 0 ? 1 : list[list.length - 1].id + 1
 
-  async deleteProduct(id) {
-    const index = this.products.findIndex((p) => p.id === id);
-    if (index !== -1) {
-      const deletedProduct = this.products.splice(index, 1)[0];
-      await this.saveProducts(this.products)
-        .then(() => {
-          console.log(`Producto eliminado: ${deletedProduct.title}`);
-        })
-        .catch((error) => {
-          console.log('Error al guardar los productos', error.message);
-        });
-    } else {
-      console.log('Producto no encontrado.');
-      return null;
+            list.push({ ...obj, id })
+            await fs.promises.writeFile(this.path, JSON.stringify(list))
+            return `El producto con el ID ${id} fue generado correctamente`
+
+        }
+        catch { (error) => { return error } }
+    };
+
+    async getProductsById(id) {
+        try {
+            let list = await this.product()
+            const itemId = list.find(e => e.id == id)
+            if (itemId) {
+                return itemId
+            }
+            else { return `No existe producto con el ID ${id}` }
+
+        } catch { (error) => { return (error) } }
     }
-  }
+    async deleteProduct(id) {
+        try {
+            let list = await this.product()
+            if (list.findIndex(e => e.id === id) !== -1) {
+                const newList = list.filter(e => e.id != id)
+                await fs.promises.writeFile(this.path, JSON.stringify(newList))
+                return (`El producto con el ID ${id} fue eliminado`)
+            }
+            else { return ("El producto que intentas eliminar no existe.") }
+        }
+        catch { (error) => { return error } }
+    }
+
+    async updateProduct(pid, obj) {
+        try {
+            let list = await this.product()
+            let objKey = Object.keys(obj)
+            let noId = objKey.find(e => e == "id")
+            if (noId) {
+                return ("No se pudo modificar el ID, ingrese valores validos")
+            };
+            const ub = list.findIndex(e => e.id == pid)
+            if (ub !== -1) {
+                const objRaw = list[ub]
+                const objMod = { ...objRaw, ...obj }
+                list[ub] = objMod
+                fs.promises.writeFile(this.path, JSON.stringify(list))
+                return "Cambio realizado"
+            }
+            else {
+                return `No se encontró producto con el ID ${pid}`
+            }
+        }
+        catch { (error) => { return error } }
+    }
 }
 
-export { ProductManager };
+
+// TESTING
+
+ //const manager = new ProductManager("arhivo.json") 
+
+
+ //manager.getProducts() 
+//manager.addProduct('Excellent Gato Adulto',"Alimento", 22560, " ", 1,6)
+/*  manager.addProduct('prueba 1','prueba 1',1, " ",52,55,"alimento") */
+/* manager.addProduct('prueba 2 ',"prueba 2", 230, " ", 5,22) */
+/* manager.addProduct('prueba 3',"prueba 3", 22, " ", 88,22) */
+/* manager.addProduct('prueba 4',"prueba 4", 2200, " ", 44,22)  */
+/* export const c = manager.getProducts() */
+/* manager.getProductsById(2) */
+/* manager.updateProduct(2,{title:"hola"}) */
+/* manager.getProducts() */
+/* manager.deleteProduct(5) */

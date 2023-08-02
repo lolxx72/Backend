@@ -7,7 +7,7 @@ import { CartManager } from './CartsManager.js';
 export const __dirname= dirname(fileURLToPath(import.meta.url));
 
 export  function prodManager (){
-    const manager =new ProductManager("./productos.json")
+    const manager =new ProductManager("./archivo.json")
     return manager
 }
 

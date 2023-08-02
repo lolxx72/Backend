@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-export default class ProductManager {
+export class ProductManager {
     constructor(path) {
         this.path = path
     }
@@ -26,13 +26,13 @@ export default class ProductManager {
     async addProduct({ title, description, price, thumbnail, code, stock, category, status = true }) {
         try {
             if (!title || !description || !price || !thumbnail || !stock || !code || !category) {//analiza si todos los campos estan llenos
-                return 'Datos  incompletos'
+                return 'ERROR: Complete todos los campos'
 
             }
             let list = await this.product()
             const listCode = list.find(e => e.code === code)
             if (listCode) {
-                return "El codigo ingresado existe, ingrese uno nuevo"
+                return "El codigo ingresado existe, coloque  valores nuevos"
             };
             let obj = {
                 title: title,
@@ -48,10 +48,10 @@ export default class ProductManager {
 
             list.push({ ...obj, id })
             await fs.promises.writeFile(this.path, JSON.stringify(list))
-            return `El producto con el ID ${id} fue generado con exito`
+            return `El producto con el ID ${id} fue generado correctamente`
 
         }
-        catch { (error) => { console.log("error") } }
+        catch { (error) => { return error } }
     };
 
     async getProductsById(id) {
@@ -73,7 +73,7 @@ export default class ProductManager {
                 await fs.promises.writeFile(this.path, JSON.stringify(newList))
                 return (`El producto con el ID ${id} fue eliminado`)
             }
-            else { return ("El producto que intentas eliminar, no existe") }
+            else { return ("El producto que intentas eliminar no existe.") }
         }
         catch { (error) => { return error } }
     }
@@ -84,7 +84,7 @@ export default class ProductManager {
             let objKey = Object.keys(obj)
             let noId = objKey.find(e => e == "id")
             if (noId) {
-                return ("No se puede modificar el ID, ingrese valores validos")
+                return ("No se pudo modificar el ID, ingrese valores validos")
             };
             const ub = list.findIndex(e => e.id == pid)
             if (ub !== -1) {
@@ -95,7 +95,7 @@ export default class ProductManager {
                 return "Cambio realizado"
             }
             else {
-                return `No existe producto con el ID ${pid}`
+                return `No se encontró producto con el ID ${pid}`
             }
         }
         catch { (error) => { return error } }
@@ -108,13 +108,14 @@ export default class ProductManager {
 /* const manager = new ProductManager("arhivo.json") */
 
 
-/* manager.getProducts() 
-manager.addProduct('excellent gato adulto', 'gatos', 23000, 'a', 21)
-manager.addProduct('excellent perro adulto', 'perros', 15600, 'b', 11)
-manager.addProduct('pro plan perro cachorro', 'perros', 33000, 'c', 36)
-manager.addProduct('pro plan gato cachorro', 'gatos', 26000, 'd', 2)
+/* manager.getProducts() */
+/* manager.addProduct('mate',"madera", 220, " ", 1,22) */
+/*  manager.addProduct('yerba','organica',1, " ",52,55,"alimento") */
+/* manager.addProduct('termo ',"palstico", 230, " ", 5,22) */
+/* manager.addProduct('matelisto',"toma mates", 22, " ", 88,22) */
+/* manager.addProduct('bombilla',"alpaca", 2200, " ", 44,22)  */
 /* export const c = manager.getProducts() */
 /* manager.getProductsById(2) */
-/* manager.updateProduct(2,{title:"excellent perro bajas calorias"}) */
+/* manager.updateProduct(2,{title:"hola"}) */
 /* manager.getProducts() */
-/* manager.deleteProduct(6) */
+/* manager.deleteProduct(5) */

@@ -3,13 +3,13 @@ import {prodManager}from "../utils.js"
 
 const prods = prodManager()
 const prodsList= await prods.getProducts()
-const router = Router()
+const router =Router()
 
 router.get('/',async(req,res)=>{
     try{const limit = req.query.limit
     const resLimit = prodsList.slice(0,limit)
     if (!limit){
-        res.send(`${prodsList}`)}
+        res.send({prodsList})}
     else {res.send(resLimit)}}
     catch{res.status(400).send("error")}
 })
@@ -19,7 +19,7 @@ router.get('/:pid',async (req,res)=>{
     const pfind= await prodsList.find(e=>e.id==pid)
     try{
         if(!pfind){
-            res.send(`No hay ningún producto con ID: ${pid.toUpperCase()}`)
+            res.send(`No se encontró producto con el ID ${pid.toUpperCase()}`)
         }
         else{res.status(200).send(pfind)}
     }
@@ -51,5 +51,4 @@ router.delete('/:pid',async (req,res)=>{
         res.status(200).send(await prods.deleteProduct(+pid))
     } catch {res.status(400).send("error")}
 })
-
 export default router;

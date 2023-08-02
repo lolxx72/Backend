@@ -11,13 +11,14 @@ router.get('/:cid',async (req,res)=>{
     let findCart=  await carts.findCart(cid)
     try{
         if(!findCart){ 
-            res.send(`No hay carrito con ID: ${cid.toUpperCase()}`)}
+            res.send(`No se encontró carrito con el ID ${cid.toUpperCase()}`)}
         else{
             res.status(200).send(findCart)
         }
     }
     catch{res.status(400).send("error")}
  })
+
 
 router.post('/',async (req,res)=>{
     try{

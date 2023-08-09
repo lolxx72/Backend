@@ -1,0 +1,13 @@
+<h1>Todos los productos</h1>
+<a href="/"><button>Inicio</button></a>
+<ul>
+    {{#if allprod.length}}
+    {{#each allprod}}
+    <li> Titulo: {{this.title}}<br>Descripcion: {{this.description}}<br>Codigo: {{this.code}}<br>Price: {{this.price}}
+    <br>Stock: {{this.stock}}<br>Categoria: {{this.category}}<br>ID: {{this.id}}
+    </li>
+    {{/each}}
+    {{else}}
+    <h3>Producto inexistente</h3>
+    {{/if}}
+</ul>

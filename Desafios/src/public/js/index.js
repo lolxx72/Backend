@@ -30,11 +30,11 @@ prodsForm.onsubmit = (e) => {
     thumbnail.value = '';
     price.value = '';
     stock.value = '';
-    console.log('Form data to be emitted:', obj);
+    console.log('Data del form', obj);
 };
 
 socketClient.on("addedProd", (newProduct) => {
-    console.log('Received new product data from server:', newProduct);
+    console.log('Datos de nuevo producto', newProduct);
     const addRow = `
         <tr>
             <td>${newProduct.id}</td>

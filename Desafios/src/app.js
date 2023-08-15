@@ -36,10 +36,10 @@ socketServer.on ('connection', socket =>{
         console.log('Cliente', socket.id, 'desconectado');
     });
 
-    socketServer.emit('bienvenida',`Bienvenido a My E-book Store usuario ${socket.id}`);
+    socketServer.emit('bienvenida',`Bienvenido a Pet Funes usuario ${socket.id}`);
 
     socket.on('addProd', async (obj) => {
-        console.log('Received data from client:', obj);
+        console.log('Data recibida del cliente', obj);
         const newProduct = await ProductsManager.addProduct(obj);
         if (!(newProduct instanceof Error)){
             const newProductsArray = await ProductsManager.getProducts();

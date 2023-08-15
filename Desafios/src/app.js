@@ -1,39 +1,60 @@
-import express  from "express";
-import { __dirname } from "./utils.js";
-import { engine } from 'express-handlebars';
-import productsRouter from './routes/products.router.js';
-import cartsRouter from "./routes/carts.router.js";
-import viewsRouter from "./routes/views.router.js"
-import { Server } from "socket.io";
-import {prodManager} from "./utils.js"
+import express from 'express';
+import __dirname from './utils.js';
+import handlebars from 'express-handlebars';
+import ProductsManager from './productManager.js'
+import viewsRouter from './routes/views.router.js';
+import productsRouter from './routes/products.router.js'
+import { Server } from 'socket.io'; 
 
-const app= express()
-const PORT = 8080
-const prod=prodManager()
+const app = express();
 
+//Express
+app.use (express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(express.static(__dirname + '/public'));
 
-
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
-app.use(express.static(__dirname+"/public"))
-app.use('/api/products',productsRouter)
-app.use('/api/carts',cartsRouter)
-app.use('/',viewsRouter)
-
-app.engine('handlebars', engine());
-app.set('views', __dirname+'/views');
+//Handlebars
+app.engine('handlebars', handlebars.engine());
+app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 
-const httpServer= app.listen(PORT,()=>{
-    console.log(`Puerto ${PORT}`)
-})
+//Hooks
+app.use('/api/views',viewsRouter);
 
-const socketServer= new Server(httpServer)
+const PORT = 8080
 
-socketServer.on('connection', async(socket)=>{
-    console.log(`Se conectó ${socket.id}`)
-    const allProds = await prod.getProducts()
-    socket.on('disconnect',()=>{console.log(`Se desconectó ${socket.id}`)})
-    socketServer.emit('allProds',allProds)
+const httpServer = app.listen(PORT,()=>{
+    console.log(`Escuchando al puerto ${PORT}`);
+});
+
+const socketServer = new Server (httpServer);
+
+socketServer.on ('connection', socket =>{
+    console.log("Nuevo cliente conectado:", socket.id);
+
+    socket.on('disconnect', () => {
+        console.log('Cliente', socket.id, 'desconectado');
+    });
+
+    socketServer.emit('bienvenida',`Bienvenido a My E-book Store usuario ${socket.id}`);
+
+    socket.on('addProd', async (obj) => {
+        console.log('Received data from client:', obj);
+        const newProduct = await ProductsManager.addProduct(obj);
+        if (!(newProduct instanceof Error)){
+            const newProductsArray = await ProductsManager.getProducts();
+            socket.emit ("addedProd", newProductsArray);
+        } else{
+            console.error(newProduct);
+        }
+    });
+
+    socket.on('deleteProd', async (id) => {
+        await ProductsManager.deleteProduct(Number (id));
+
+        const newProductsArray = await ProductsManager.getProducts();
+
+        socketServer.emit("deletedProd",await newProductsArray);
+    });
     
-})
+});

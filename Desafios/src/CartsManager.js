@@ -1,68 +1,73 @@
-import fs from 'fs'
-import { prodManager } from './utils.js'
+import { existsSync, promises } from 'fs';
 
 
-const prod = prodManager()
-export class CartManager {
+class CartsManager {
     constructor(path) {
-        this.path = path
-    }
-    async getCart() {
-        try {
-            if (fs.existsSync(this.path)) {
-                const cart = await fs.promises.readFile(this.path, 'utf-8')
-                return JSON.parse(cart)
-            } else return []
-        }
-        catch { (error) => { return error } }
-
+        this.path = path;
     }
 
-    async crateCart() {
+    async getCarts() {
         try {
-            const cart = await this.getCart()
-            const id = cart.length == 0 ? 1 : cart[cart.length - 1].id + 1
-            cart.push({ id: id, products: [] })
-            await fs.promises.writeFile(this.path, JSON.stringify(cart), 'utf-8')
-            return `Carrito creado con el ID ${id}`
-        }
-        catch { (error) => { return error } }
-
-
-    }
-
-    async findCart(cid) {
-        try {
-            const cart = await this.getCart()
-            const list = cart.find(e => e.id == cid)
-            if (list) {
-                return list.products
-            }
-            else { return `No se encontro carrito con el ID ${cid}` }
-        }
-        catch { (error) => { return error } }
-    }
-
-    async addProduct(cid, pid) {
-        const cart = await this.getCart()
-        const cartWanted = await cart.find(e => e.id == cid)
-        if (!cartWanted) { return `No se encontró carrito con ID ${cid}` } 
-        const product = await prod.getProductsById(pid)
-        if (typeof(product)=="string") { return product} 
-        try {
-            const findCartProd = await cartWanted.products
-            const findProd = await findCartProd.find(e => e.id == pid)
-            if (findProd) {
-                findProd.quantity = findProd.quantity + 1
-                await fs.promises.writeFile(this.path, JSON.stringify(cart), 'utf-8')
-                return `Añadido al carrito con ID ${cid}. Product ${product.title.toUpperCase()}. Total: ${findProd.quantity}`
+            if (existsSync(this.path)) {
+                const data = await promises.readFile(this.path, 'utf-8')
+                return JSON.parse(data)
             } else {
-                let newProd = { id: +pid, quantity: 1 }
-                findCartProd.push(newProd)
-                await fs.promises.writeFile(this.path, JSON.stringify(cart), 'utf-8')
-                return `Añadido al carrito con ID ${cid} Product ${product.title.toUpperCase()}. Total: 1`
+                return []
             }
+        } catch (error) {
+            return error
         }
-        catch { (error) => { return error } }
+    };
+
+    async getCartById(cid) {
+        try {
+            const carts = await this.getCarts()
+            const cart = carts.find(cart => cart.id === cid);
+            if (cart) {
+                return cart;
+            } else {
+                console.error('Cart Not found');
+            }
+
+        } catch (error) {
+            return error
+        }
+    };
+
+    async createCart() {
+        try {
+            const carts = await this.getCarts()
+
+            const id = carts.length === 0 ? 1 : carts[carts.length - 1].id + 1
+
+            const newCart = {
+                products: [], 
+                id
+            };
+
+            carts.push(newCart)
+            await promises.writeFile(this.path, JSON.stringify(carts));
+            return newCart;
+        } catch (error) {
+            return error
+        }
+    };
+
+    async addProductToCart (idCart, idProduct){
+        const carts = await this.getCarts()
+        const cart = carts.find(cart => cart.id === idCart)
+        const productIndex = cart.products.findIndex (prod => prod.product ===idProduct)
+        if (productIndex === -1){
+            cart.products.push ({product:idProduct, quantity:1})
+        }else{
+            cart.products[productIndex].quantity++
+        }
+        await promises.writeFile(this.path,JSON.stringify(carts))
+        return cart
     }
-}
+};
+
+
+const cartsManager = new CartsManager ('Carts.json')
+
+export default cartsManager

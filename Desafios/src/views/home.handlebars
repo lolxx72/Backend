@@ -1,26 +1,12 @@
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Titulo</th>
-            <th>Descripcion</th>
-            <th>Codigo</th>
-            <th>Thumbnail</th>
-            <th>Precio</th>
-            <th>Stock</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#each products}}
-        <tr>
-            <td>{{id}}</td>
-            <td>{{title}}</td>
-            <td>{{description}}</td>
-            <td>{{code}}</td>
-            <td>{{thumbnail}}</td>
-            <td>{{price}}</td>
-            <td>{{stock}}</td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
+<h1>TODOS LOS PRODUCTOS</h1>
+<a href="/"><button>INICIO</button></a>
+<ul>
+    {{#if allprod.length}}
+    {{#each allprod}}
+    <li> {{this}}
+    </li>
+    {{/each}}
+    {{else}}
+    <h3>No existe ningun producto</h3>
+    {{/if}}
+</ul>

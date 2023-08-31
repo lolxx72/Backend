@@ -1,72 +1,79 @@
 import { Router } from "express";
-import ProductsManager from '../productManager.js'
+import { productMongo } from "../manager/product/productManagerMongo.js";
 
-const router = Router()
+const router= Router()
 
-//getProducts()
-router.get('/', async (req, res) => {
-    try {
-        const products = await productsManager.getProducts()
-        const {limit} = req.query
-        let limitedProds;
-        if (!limit) {
-            limitedProds = products
-        } else {
-            limitedProds = products.slice (0,limit);
-        }    
-        res.status(200).json({ message: 'Products', products: limitedProds })
-        console.log('Prods filtrados', limitedProds);
-    } catch (error) {
-        res.status(500).json({ error })
+router.get('/',async(req,res)=>{
+    try{
+        const products = await productMongo.getproducts()
+        if(products.length){
+            res.status(200).json({mesage:"products:", products})
+        }else{res.status(500).json({mesage:"No existe ningún producto"})}
     }
-});
+    catch(error){res.status(500).json({error})}
+})
 
-//getProducById()
-router.get('/:pid', async (req, res) => {
-    const { pid } = req.params;
-    console.log('Prod ID:', pid);
-    try {
-        const product = await productsManager.getProductById(+pid)
-        res.status(200).json({ message: 'Producto encontrado', product })
-    } catch (error) {
-        res.status(500).json({ error })
+router.get('/:pid',async(req,res)=>{
+    const pid= req.query.id
+    console.log(pid)
+    if (pid.length != 24){
+        res.status(400).json({mesage:`Utilice una ID correcta`})
+        return}
+    try{
+        const prodById= await productMongo.getproductById(pid)
+        if (!prodById || prodById.name== "CastError"){
+            res.status(400).json()
+        }else{
+            res.status(200).json({mesage:"product: ", prodById})
+    }}
+    catch(error){res.status(500).json({error})}
+})
+
+router.post('/',async (req,res)=>{
+    const {title, description, price, thumbnail, code, stock, category, status}=req.body
+    if(!title || !description || !price || !thumbnail || !stock || !code || !category){
+
+        res.status(400).json({mesage:'ERROR: Complete todos los datos'})
+        res.redirect("/alert")
     }
-});
+    try{
+        const newProd = await productMongo.createProduct(req.body)
+        res.status(200).json({mesage:"Nuevo producto: ", newProd})}
+    catch(error){res.status(500).json({error})}
+})
 
-//addProduct()
-router.post ('/', async (req, res) => {
-    console.log(req.body);
-    try {
-        const newProduct = await productsManager.addProduct(req.body);
-        res.status (200).json ({message: 'Producto añadido', product: newProduct})
-        
-    } catch (error) {
-        res.status (500).json ({error})
+router.put('/:pid',async(req,res)=>{
+    const pid= req.params.pid
+    const prod = req.body
+    if (pid.length != 24){
+        res.status(400).json({mesage:`Utilice una ID correcta`})
+        return}
+    const prodById= await productMongo.getproductById(pid)
+    if (!prodById || prodById.name== "CastError"){
+        res.status(500).json({mesage:"No existe ningún producto"})
+        return}
+    try{
+        const mod= await productMongo.updateProduct(pid,prod)
+        if (!mod){
+            res.status(400).json({mesage:`No existe ningún producto con el ID: ${pid}`})
+        }else{
+            res.status(200).json({mesage:"Producto modificado"})}
     }
-}
-);
+    catch(error){res.status(500).json({error})}
+})
 
-//updateProduct()
-router.put ('/:pid', async (req, res) => {
-    const {pid} = req.params
-    try {
-        const productUpdated = await productsManager.updateProduct(+pid, req.body)
-        res.status(200).json({message: 'Producto actualizado', productUpdated})
-    } catch (error) {
-        res.status(500).json ({error})
-    }
-});
+router.delete('/:pid',async(req,res)=>{
+    const pid = req.params.pid
+    if (pid.length != 24){
+        res.status(400).json({mesage:`Utilice una ID correcta`})
+        return}
+    try{
+        const del = await productMongo.deleteProduct(pid)
+        if (!del|| del.name== "CastError"){
+            res.status(400).json({mesage:"El ID no existe"})
+        }else {res.status(200).json({mesage:"El producto fue eliminado"})
+    }}
+    catch(error){res.status(500).json({error})}
+})
 
-//deleteProduct()
-router.delete('/:pid', async (req, res) => {
-    const {pid} = req.params
-    try {
-        const deletedProduct = await productsManager.deleteProduct (+pid)
-        res.status(200).json ({message: 'Producto eliminado', deletedProduct})
-    } catch (error) {
-        res.status (500).json ({error})
-    }
-});
-
-
-export default router;
+export default router

@@ -1,53 +1,8 @@
-<div class="forms">
-    <div>
-        <h2>Añadir productos</h2>
-        <form id="prodsForm">
-            Titulo: <input type="text" name="title" id="title" required>
-            Descripcion: <input type="text" name="description" id="description" required>
-            Codigo: <input type="text" name="code" id="code" required>
-            Thumbnail: <input type="text" name="thumbnail" id="thumbnail">
-            Precio: <input type="number" name="price" id="price" required>
-            Stock: <input type="number" name="stock" id="stock" required>
-            <input type="submit" value="Send">
-        </form>
-    </div>
-    <div>
-        <h2>Eliminar producto</h2>
-        <form id="deleteProduct">
-            ID: <input type="number" name="id" id="id">
-            <input type="submit" value="Delete">
-        </form>
-    </div>
-</div>
+<h1>Real time products</h1>
+<a href="/"><button>INICIO</button></a>
 
-<table id="headProducts">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Titulo</th>
-            <th>Descripcion</th>
-            <th>Codigo</th>
-            <th>Thumbnail</th>
-            <th>Precio</th>
-            <th>Stock</th>
-        </tr>
-    </thead>
-    <tbody id="prodsTable">
-        {{#each products}}
-        <tr>
-            <td>{{id}}</td>
-            <td>{{title}}</td>
-            <td>{{description}}</td>
-            <td>{{code}}</td>
-            <td>{{thumbnail}}</td>
-            <td>{{price}}</td>
-            <td>{{stock}}</td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
+<div id="realTimeProds"></div>
 
-
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/index.js"></script>
+<script src="./js/index.js"> </script>

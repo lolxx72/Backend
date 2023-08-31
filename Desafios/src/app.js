@@ -1,60 +1,50 @@
-import express from 'express';
-import __dirname from './utils.js';
-import handlebars from 'express-handlebars';
-import ProductsManager from './productManager.js'
-import viewsRouter from './routes/views.router.js';
-import productsRouter from './routes/products.router.js'
-import { Server } from 'socket.io'; 
+import express from "express";
+import { __dirname } from "./utils.js";
+import {engine} from "express-handlebars"
+import "./db/dbconfig.js"
+import porductsRouter from './routes/products.router.js'
+import cartsRouter from './routes/carts.router.js'
+import viewsRouter from "./routes/views.router.js" 
+import { Server } from "socket.io";
+import { productMongo } from "./manager/product/productManagerMongo.js";
+import { msjModel } from "./manager/messages/messagesManager.js";
 
-const app = express();
 
-//Express
-app.use (express.json());
-app.use(express.urlencoded({extended:true}));
-app.use(express.static(__dirname + '/public'));
-
-//Handlebars
-app.engine('handlebars', handlebars.engine());
-app.set('views', __dirname + '/views');
-app.set('view engine', 'handlebars');
-
-//Hooks
-app.use('/api/views',viewsRouter);
-
+const app = express()
 const PORT = 8080
 
-const httpServer = app.listen(PORT,()=>{
-    console.log(`Escuchando al puerto ${PORT}`);
-});
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+app.use(express.static(__dirname+"/public"))
+app.engine('handlebars', engine());
+app.set('views', __dirname+'/views');
+app.set('view engine', 'handlebars');
 
-const socketServer = new Server (httpServer);
+app.use('/api/products',porductsRouter) 
+app.use('/api/carts',cartsRouter)
 
-socketServer.on ('connection', socket =>{
-    console.log("Nuevo cliente conectado:", socket.id);
+app.use("/",viewsRouter)
 
-    socket.on('disconnect', () => {
-        console.log('Cliente', socket.id, 'desconectado');
-    });
+const httpServer =app.listen(PORT,()=>{
+    console.log(`Escuchando puerto ${PORT}`)
+})  
 
-    socketServer.emit('bienvenida',`Bienvenido a Pet Funes usuario ${socket.id}`);
+const socketServer = new Server(httpServer)
 
-    socket.on('addProd', async (obj) => {
-        console.log('Data recibida del cliente', obj);
-        const newProduct = await ProductsManager.addProduct(obj);
-        if (!(newProduct instanceof Error)){
-            const newProductsArray = await ProductsManager.getProducts();
-            socket.emit ("addedProd", newProductsArray);
-        } else{
-            console.error(newProduct);
-        }
-    });
 
-    socket.on('deleteProd', async (id) => {
-        await ProductsManager.deleteProduct(Number (id));
 
-        const newProductsArray = await ProductsManager.getProducts();
-
-        socketServer.emit("deletedProd",await newProductsArray);
-    });
+socketServer.on('connection',async(socket)=>{
+    console.log(`Se conecto ${socket.id}`)
+    socket.on('disconnect',()=>{
+        console.log(`Se desconecto ${socket.id}`)})
     
-});
+        const allProds = await productMongo.getproducts()
+        socketServer.emit('allProds',allProds)
+
+        socket.on("msj",async (e)=>{
+            console.log(e)
+                await msjModel.createMsj(e)
+            const listmsjs= await msjModel.findMsj()
+            socketServer.emit("msjs",listmsjs)
+        })
+})

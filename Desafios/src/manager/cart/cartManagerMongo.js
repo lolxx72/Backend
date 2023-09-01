@@ -1,9 +1,10 @@
-import { cartModel } from "../../db/models/cart.model.js";
+import { cartModel } from "../../DB/models/cart.model.js";
 import { productMongo } from "../product/productManagerMongo.js";
+
 class CartMongo {
     async getCarts(obj){
         try{
-            const carts =await cartModel.create(obj)
+            const carts = await cartModel.create(obj)
             return carts
         }
         catch(error){return error}
@@ -19,13 +20,14 @@ class CartMongo {
 
 
 
-    async deleteCart(id){
+    /*async deleteCart(id){
         try{
             const cart =cartModel.findByIdAndDelete(id)
             return cart
         }
         catch(error){return error}
-    }
+    }*/
+
     async updatecart(cid,pid){
 
         try{
@@ -59,6 +61,47 @@ class CartMongo {
         }
         catch(error){return error}
     }
+
+async delProdCart (cid,pid){
+    const cartF =await cartModel.findById(cid)
+    const prodInCart = cartF.products
+    const newcart= prodInCart.filter(e=> e.prodId !=pid)
+    cartF.products=newcart
+    await cartModel.findByIdAndUpdate(cid,cartF)
+    return cartF
 }
 
-export const cartMongo =new CartMongo()
+async delAllprods(cid){
+    const cartF =await cartModel.findById(cid)
+    if(cartF.products.length){
+        cartF.products=[]
+        await cartModel.findByIdAndUpdate(cid,cartF)
+        return "Exito!"
+    }
+    else{return "No existe el carrito"}
+    
+
+}
+
+async putquantity(cid,pid,cant){
+    const {quantity} =cant
+    const cartF =await cartModel.findById(cid)
+    const prodInCart = cartF.products
+    const newQuantity= prodInCart.find(e=>e.prodId== pid)
+    newQuantity.quantity = quantity
+    await cartModel.findByIdAndUpdate(cid,cartF)
+
+}
+
+async putProd(cid,prod){
+    const cartF =await cartModel.findById(cid)
+    const prodInCart = cartF.products
+    cartF.products=prod
+    
+    await cartModel.findByIdAndUpdate(cid,cartF)
+
+}
+}
+
+
+export const cartMongo = new CartMongo()

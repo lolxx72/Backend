@@ -1,0 +1,14 @@
+<h1>Carrito 1</h1>
+<a href="/"><button>INICIO</button></a>
+<ul>
+    {{#if allProdMap.length}}
+    {{#each allProdMap}}
+    <li>
+        <p>prodId:{{this.prodId}}</p>
+        <p>quantity:{{this.quantity}}</p>
+    </li>
+    {{/each}}
+    {{else}}
+    <h3>No existen productos</h3>
+    {{/if}}
+</ul>

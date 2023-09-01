@@ -8,17 +8,21 @@ router.get('/', async (req, res) => {
     res.render('index');
 });
 
-router.get('/createProd', (req, res) => {
-    res.render('createProd')
-})
 
-router.get("/alert", (req, res) => {
-    const cook = req.cookies
-    res.render("alert", { cook })
-})
 router.get('/allproducts', async (req, res) => {
-    const allprod = await productMongo.getproducts()
-    res.render("home", {allprod})
+    const allprod = await fetch('http://localhost:8080/api/products')
+    const getProd= await allprod.json()
+    const allProds =getProd.payload
+    const allProdMap= allProds.map(e=>({
+        _id:e._id,
+        title:e.title,
+        description:e.description,
+        code: e.code,
+        price:e.price,
+        stock:e.stock,
+        category:e.category
+    }))
+    res.render("home", {allProdMap})
 });
 
 
@@ -31,6 +35,20 @@ router.get('/message', (req,res)=>{
 
     res.render('message')
 })
+
+router.get('/cart', async(req,res)=>{
+    const cart = await fetch('http://localhost:8080/api/carts/')
+    const getCart= await cart.json()
+    const allprod =getCart.products
+    const allProdMap= allprod.map(e=>({
+        prodId:e.prodId,
+        quantity:e.quantity }))
+    res.render('cartId',{allProdMap})
+})
+
+
+
+
 
 
 export default router

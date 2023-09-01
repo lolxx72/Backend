@@ -1,12 +1,23 @@
 <h1>TODOS LOS PRODUCTOS</h1>
 <a href="/"><button>INICIO</button></a>
 <ul>
-    {{#if allprod.length}}
-    {{#each allprod}}
-    <li> {{this}}
+    {{#if allProdMap.length}}
+    {{#each allProdMap}}
+    <li>
+        <p>id:{{this._id}}</p>
+        <p>title:{{this.title}}</p>
+        <p>Description: {{this.description}}</p>
+        <p>Code: {{this.code}}</p>
+        <p>Price: {{this.price}}</p>
+        <p>Stock: {{this.stock}}</p>
+        <p>Category: {{this.category}}</p>
+        <form action="/" method="get">
+        <input type="submit" value="Añadir al carrito"></form>
+        
+    
     </li>
     {{/each}}
     {{else}}
-    <h3>No existe ningun producto</h3>
+    <h3>No existen productos</h3>
     {{/if}}
 </ul>

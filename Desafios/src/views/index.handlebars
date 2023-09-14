@@ -4,3 +4,20 @@
 <a href="/allproducts"><button> Todos los productos</button></a>
 <a href="/message"><button> Mensajes </button></a>
 <a href="/cart"><button> Carrito </button></a>
+
+{{#if cook}}
+    {{#each cook}}
+    <li>
+        <p>hola {{this.first_name}}</p>
+        <p>rol :{{this.rol}}</p>
+        
+    
+    </li>
+    {{/each}}
+    {{else}}
+    <h3>No product exists</h3>
+    {{/if}}
+
+<form action="/api/user/logout" method="get">
+<input type="submit" value="LOG OUT">
+</form>

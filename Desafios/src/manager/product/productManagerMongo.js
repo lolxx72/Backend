@@ -8,6 +8,7 @@ class ProductMongo {
         }
         catch(error){return error}
     } */
+    
     async getproducts(limitQ,pageQ,qP,sortO){
         try{
             

@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
         res.clearCookie("connect.sid").redirect("/")
     })
     
-    router.get("/githubSingUp",passport.authenticate('github', { scope: [ 'user:email' ] }))
+    router.get("/githubSignUp",passport.authenticate('github', { scope: [ 'user:email' ] }))
 
     router.get("/github", passport.authenticate('github', { failureRedirect: '/login' }),
         async (req, res) => {

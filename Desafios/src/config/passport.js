@@ -31,8 +31,8 @@ import {compareHash } from "../utils.js";
 
  
 passport.use(new githubStrategy(
-    {clientID: 'Iv1.a5948c138fda0bf0',
-    clientSecret: 'f241c801c0b2e3229f46eb5fe5dd929882a6f2d9',
+    {clientID: 'Iv1.0cb6621ba9e659e0',
+    clientSecret: '5133800ffcdf060882d2294c44f530d2db8ef9a5',
     callbackURL:'http://localhost:8080/api/user/github'},
     async function (accessToken, refreshToken, profile, done) {
             try {

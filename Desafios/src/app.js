@@ -1,7 +1,9 @@
+//generic
 import express from 'express';
 import { __dirname } from "./utils.js";
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+
 
 // DB
 import { URI } from './utils.js';
@@ -25,6 +27,9 @@ import cartsRouter from './routes/carts.router.js';
 import viewsRouter from "./routes/views.router.js" ;
 import userRouter from './routes/user.router.js';
 
+// passport
+import passport from 'passport';
+import './config/passport.js'
 
 //server
 const app = express()
@@ -39,6 +44,25 @@ app.engine('handlebars', engine());
 app.set('views', __dirname+'/views');
 app.set('view engine', 'handlebars');
 
+//session
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: URI,
+        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+        ttl: 600
+    }),
+    secret: "secret",
+    resave: false,
+    maxAge: 600 * 10,
+    saveUninitialized: false,
+}))
+
+//passport
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 //endpoints
 app.use('/api/products',porductsRouter) ;
 app.use('/api/carts',cartsRouter);
@@ -46,25 +70,13 @@ app.use('/api/user',userRouter);
 app.use("/",viewsRouter);
 
 
-//session
-app.set('trust proxy', 1)
-app.use(session({
-    store: MongoStore.create({
-        mongoUrl: URI,
-        mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
-        ttl: 600
-    }),
-    secret: "secret",
-    resave:false,
-    saveUninitialized:false,
-}))
 
-
-
+//connect
 
 const httpServer =app.listen(PORT,()=>{
     console.log(`Escuchando puerto ${PORT}`)
 })  
+
 const socketServer = new Server(httpServer)
 
 socketServer.on('connection',async(socket)=>{

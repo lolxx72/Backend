@@ -1,5 +1,5 @@
 import { userModel } from "../../DB/models/user.model.js";
-
+import { hashdata , compareHash } from "../../utils.js";
 
 class UserMongo {
 

@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema({
         type:Boolean,
         requireed:true,
         default:false 
+    },
+    githubLog:{
+        type:Boolean,
+        requireed:true,
+        default:false 
     }
 });
 

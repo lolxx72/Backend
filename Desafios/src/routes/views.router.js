@@ -36,7 +36,7 @@ router.get('/index', async (req, res) => {
     const admin = user.isAdmin ? "ADMIN" : "USER"
     const cook = [{
         first_name: user.first_name,
-        rol: admin
+        rol: admin,
     }]
     res.render("index", { cook });}
 })

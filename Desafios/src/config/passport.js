@@ -10,6 +10,11 @@ import { userMongo } from "../manager/user/userManagerMongo.js";
 
 import {compareHash } from "../utils.js";
 
+import { Strategy as JWTstrategy, ExtractJwt} from "passport-jwt";
+
+import { Cookie } from "express-session";
+
+
 // strategy
 
  passport.use("local", new localStrategy(
@@ -93,6 +98,25 @@ return done(null, newUser)}
 catch(error){done(error)}}
 
 ))
+
+// JWT strategy
+const SECRET_KEY = 'secretKey'
+const cookieExtractor =  (req) => {
+    const cook=req.cookies["token"]
+    return cook
+
+}
+
+passport.use("jwt",new JWTstrategy({
+    secretOrKey:"secretKey",
+    jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor])
+},
+    async (jwt_payload, done) => {
+        try {
+            return done(null, jwt_payload)
+        }
+        catch (error) { done(null, false) }
+    })) 
 
 //serial and deserial User
 

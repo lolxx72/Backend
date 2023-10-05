@@ -1,22 +1,11 @@
 import { Router } from "express";
 import { userMongo } from "../manager/user/userManagerMongo.js";
-import session from "express-session";  
 import MongoStore from "connect-mongo";
 import { URI } from '../utils.js';
 import passport from "passport";
 
 const router = Router()
 
-router.use(session({
-    store: MongoStore.create({
-        mongoUrl: URI,
-        mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
-        ttl: 600
-    }),
-    secret: "secret",
-    resave:false,
-    saveUninitialized:false,
-}))
 
 router.get('/', async (req, res) => {
     res.render('sesion')
@@ -27,22 +16,24 @@ router.get('/login', async (req, res) => {
     res.render('login');
 });
 
-router.get('/index', async (req, res) => {
-    const email = req.session.passport ? req.session.passport.user.email : req.session.email
-    if (!email) {
-        res.redirect('/login')
-    }else{
-    const user = await userMongo.findUser(email)
-    const admin = user.isAdmin ? "ADMIN" : "USER"
+router.get('/index',passport.authenticate('jwt',{session:false,failureRedirect:"/login"}), async (req, res) => {
+    const user =  req.user.user
+    const admin = user.isAdmin ? "ADMIN":"USER"
     const cook = [{
         first_name: user.first_name,
-        rol: admin,
+        rol: admin
     }]
-    res.render("index", { cook });}
+    res.render("index", { cook } );
 })
 
 
-router.get('/allproducts', async (req, res) => {
+router.get('/allproducts',passport.authenticate('jwt',{session:false, failureRedirect:"/"}), async (req, res) => {
+    const user =  req.user
+    console.log(user)
+    if(!user){
+        res.redirect('/login')
+    }
+
     const allprod = await fetch('http://localhost:8080/api/products')
     const getProd = await allprod.json()
     const allProds = getProd.payload
@@ -59,7 +50,7 @@ router.get('/allproducts', async (req, res) => {
 });
 
 
-router.get('/realTimeProducts', (req, res) => {
+router.get('/realTimeProducts',passport.authenticate('jwt',{session:false, failureRedirect:"/"}), (req, res) => {
 
     res.render('realTimeProducts')
 })
@@ -69,8 +60,8 @@ router.get('/message', (req, res) => {
     res.render('message')
 })
 
-router.get('/cart', async (req, res) => {
-    const cart = await fetch('http://localhost:8080/api/carts/')
+router.get('/cart',passport.authenticate('jwt',{session:false, failureRedirect:"/"}), async (req, res) => {
+    const cart = await fetch('http://localhost:8080/api/carts')
     const getCart = await cart.json()
     const allprod = getCart.products
     const allProdMap = allprod.map(e => ({
@@ -84,9 +75,6 @@ router.get('/cart', async (req, res) => {
 router.get('/logout', (req, res) => {
     
 })
-
-
-
 
 
 export default router

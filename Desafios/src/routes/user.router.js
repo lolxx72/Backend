@@ -26,8 +26,7 @@ router.post('/', async (req, res) => {
 )
 
 
-
-/* router.post('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const { email, password } = req.body
     if (!email || !password) {
         res.status(400).json({ messge: "Verifique los datos" })
@@ -43,7 +42,8 @@ router.post('/', async (req, res) => {
     const token =  generateToken(userExist)
     console.log(token)
     res.cookie("cookieToken", token, {httpOnly:true,secure:true,maxAge:60*60}).status(200).redirect("/index")
-})   */
+}) 
+
  
 router.get("/validation",passport.authenticate('jwt',{session:false}), async(req,res)=>{
 
@@ -64,7 +64,7 @@ router.get('/logout', async (req, res) => {
 })
 
 
-router.get("/githubSingUp",passport.authenticate('github', { scope: [ 'user:email' ] },{session:false}))
+router.get("/githubSignUp",passport.authenticate('github', { scope: [ 'user:username' ] },{session:false}))
 
 router.get("/github", passport.authenticate('github', { failureRedirect: '/login' },{session:false},),
     async (req, res) => {

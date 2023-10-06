@@ -1,21 +1,26 @@
+//generic
 import express from 'express';
 import { __dirname } from "./utils.js";
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 
+// 
 import { URI } from './utils.js';
 import './DB/dbConfig.js';
 import MongoStore from 'connect-mongo';
 
 
+//handlebars
 import { engine } from "express-handlebars";
 
 
+// server
 import { Server } from "socket.io";
 import { productMongo } from './manager/product/productManagerMongo.js';
-import { msjModel } from './manager//messages/messagesManager.js';
+import { msjModel } from './manager/messages/messagesManager.js';
 
 
+//endpoints
 import porductsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import viewsRouter from "./routes/views.router.js";
@@ -23,11 +28,13 @@ import userRouter from './routes/user.router.js';
 import sessionsRouter from './routes/sessions.router.js';
 
 
+// passport
 import passport from 'passport';
 import './config/passport.js'
 
 
 
+//server
 const app = express()
 const PORT = 8080
 app.use(express.json());
@@ -35,11 +42,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(__dirname + "/public"));
 
+//handlebars
 app.engine('handlebars', engine());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 
 
+//session
 app.use(session({
     store: MongoStore.create({
         mongoUrl: URI,
@@ -48,12 +57,14 @@ app.use(session({
     secret: "secret"
 }))
   
+//passport
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 
 
+//endpoints
 app.use('/api/products', porductsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/user', userRouter);
@@ -61,6 +72,9 @@ app.use('/api/sessions', sessionsRouter);
 app.use("/", viewsRouter);
 
 
+
+
+//connect
 const httpServer = app.listen(PORT, () => {
     console.log(`Escuchando puerto ${PORT}`)
 })
